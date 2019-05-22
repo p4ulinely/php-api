@@ -35,8 +35,10 @@
 			if ($bd[$dados[0]]) {
 				echo json_encode($bd[$dados[0]]);
 			} else {
-				echo json_encode($bd);
-				// echo '[]';
+				// imprime todos os daos
+				// echo json_encode($bd);
+				
+				echo '[]';
 			}
 		}// GET 
 
@@ -51,12 +53,9 @@
 			// caso nenhum json tenha sido passado
 			if (count($objCorpo) < 1) {
 				header('Content-type: application/json', '', 400);
-				echo json_encode(['mensagem' => '400, Item nao inserido']);
+				echo json_encode(['mensagem' => '400, Nao Inserido']);
 				exit;
 			}
-
-			// id pro novo obj
-			$objCorpo['id'] = time();
 
 			// Caso o dado nao existe
 			if (!$bd[$dados[0]]) {
@@ -64,13 +63,27 @@
 			}
 
 			// adiciona o novo ao $bd
-			$bd[$dados[0]][] = $objCorpo;
+			if (count($objCorpo) == 1) {
+				
+				// id pro novo obj
+				// $bd['id'] = time();
+
+				// apenas um item
+				$bd[$dados[0]][] = $objCorpo;
+				$n_item = 1;
+
+			// para mais de um item
+			} else {
+				foreach ($objCorpo as $n_item => $value) {
+					$bd[$dados[0]][$n_item] = $value;
+				}
+			}
 			
 			// salva o novo arquivo
 			file_put_contents('db.json', json_encode($bd));
 
 			header('Content-type: application/json');
-			echo json_encode(['mensagem' => '200, Item Inserido']);
+			echo json_encode(['mensagem' => '200, ('.($n_item+1).') Inserido(s).']);
 		}// POST
 	}// else permissao
 	
